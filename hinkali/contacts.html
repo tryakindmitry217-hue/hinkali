@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <title>Хинкаль - Контакты</title>
+    <meta name="description" content="Контакты службы доставки еды Хинкаль. Телефон, время работы, условия доставки и оплаты">
+    <meta name="keywords" content="контакты доставки еды, телефон доставки, время работы доставки, условия доставки, оплата доставки">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <style id="inline-css">
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #000;
+            background: #fff;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Шапка */
+        .header {
+            background: #000;
+            color: #fff;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .header-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 0;
+        }
+        
+        .logo {
+            width: 150px;
+            height: auto;
+        }
+        
+        /* Навигация */
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+        
+        .nav-link {
+            color: #fff;
+            font-size: 1rem;
+            transition: color 0.3s;
+            position: relative;
+        }
+        
+        .nav-link:hover {
+            color: #ccc;
+        }
+        
+        .nav-link.active {
+            color: #fff;
+            font-weight: bold;
+        }
+        
+        .cart-indicator {
+            position: relative;
+        }
+        
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #fff;
+            color: #000;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        /* Кнопки */
+        .btn {
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid #fff;
+            background: transparent;
+            color: #fff;
+        }
+        
+        .btn:hover {
+            background: #fff;
+            color: #000;
+        }
+        
+        .btn-primary {
+            background: #fff;
+            color: #000;
+        }
+        
+        .btn-primary:hover {
+            background: #000;
+            color: #fff;
+        }
+        
+        /* Бургер-меню */
+        .burger {
+            display: none;
+            flex-direction: column;
+            gap: 4px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 5px;
+        }
+        
+        .burger-line {
+            width: 25px;
+            height: 3px;
+            background: #fff;
+            border-radius: 2px;
+        }
+        
+        /* Заголовки */
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+            color: #000;
+        }
+        
+        /* Стили для страницы контактов */
+        .contacts-page {
+            background: #fff;
+            padding-top: 80px;
+        }
+        
+        .contacts-hero {
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6));
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+        }
+        
+        .contacts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            margin: 60px 0;
+        }
+        
+        .contact-card {
+            background: #f9f9f9;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 2px solid #000;
+        }
+        
+        .contact-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .contact-icon {
+            font-size: 40px;
+            color: #000;
+            margin-bottom: 20px;
+        }
+        
+        .contact-info {
+            margin-top: 15px;
+        }
+        
+        .contact-info p {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        
+        .contact-info strong {
+            color: #333;
+        }
+        
+        .site-footer {
+            background: #000;
+            color: white;
+            padding: 50px 0;
+            text-align: center;
+            margin-top: 60px;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .footer-link {
+            color: #ccc;
+            transition: color 0.3s;
+        }
+        
+        .footer-link:hover {
+            color: #fff;
+        }
+        
+        .copyright {
+            color: #999;
+            font-size: 0.9rem;
+        }
+        
+        /* Модальное окно авторизации */
+        .auth-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            display: none;
+        }
+        
+        .auth-modal.active {
+            display: flex;
+        }
+        
+        .auth-content {
+            background: #fff;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            border: 2px solid #000;
+            overflow: hidden;
+        }
+        
+        .auth-tabs {
+            display: flex;
+            border-bottom: 2px solid #000;
+        }
+        
+        .auth-tab {
+            flex: 1;
+            padding: 15px;
+            background: none;
+            border: none;
+            font-size: 1.1rem;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .auth-tab.active {
+            background: #000;
+            color: #fff;
+        }
+        
+        .auth-form {
+            padding: 30px;
+            display: none;
+        }
+        
+        .auth-form.active {
+            display: block;
+        }
+        
+        .auth-form h3 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #000;
+        }
+        
+        .auth-form input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #000;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .auth-form button {
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .close-auth {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 2rem;
+            cursor: pointer;
+        }
+        
+        /* Уведомления */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #000;
+            color: #fff;
+            padding: 15px 25px;
+            border-radius: 8px;
+            border: 2px solid #fff;
+            z-index: 1001;
+            display: none;
+        }
+        
+        .notification.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        /* Загрузка */
+        .loading {
+            position: relative;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border: 2px solid #fff;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .contacts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-links {
+                display: none;
+                position: fixed;
+                top: 60px;
+                left: 0;
+                right: 0;
+                background: #000;
+                flex-direction: column;
+                padding: 20px;
+                gap: 20px;
+                box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            }
+            
+            .nav-links.active {
+                display: flex;
+            }
+            
+            .burger {
+                display: flex;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+        }
+        
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .contacts-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+    
+    <!-- Иконки Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="contacts-page">
+    <!-- Шапка -->
+    <header class="header">
+        <div class="container">
+            <div class="header-wrapper">
+                <a href="index.html">
+                    <img src="images/0ced8a2f-18b3-40a9-9905-484711090829.png" alt="Хинкаль" class="logo">
+                </a>
+                
+                <button class="burger">
+                    <span class="burger-line"></span>
+                    <span class="burger-line"></span>
+                    <span class="burger-line"></span>
+                </button>
+                
+                <nav class="nav-links">
+                    <a href="index.html" class="nav-link">Главная</a>
+                    <a href="menu.html" class="nav-link">Меню</a>
+                    <a href="contacts.html" class="nav-link active">Контакты</a>
+                    <a href="#" class="nav-link cart-indicator cart-link">
+                        Корзина
+                        <span class="cart-count">0</span>
+                    </a>
+                    <button class="btn auth-btn" id="authBtn">Войти</button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Главный баннер -->
+    <section class="contacts-hero">
+        <div class="container">
+            <h1 style="font-size: 2.5rem; margin-bottom: 20px;">Контакты</h1>
+            <p style="margin-top: 20px; max-width: 600px; margin-left: auto; margin-right: auto; font-size: 1.1rem;">
+                Свяжитесь с нами любым удобным способом. Мы всегда рады помочь вам с заказом и ответить на ваши вопросы.
+            </p>
+        </div>
+    </section>
+
+    <!-- Основной контент страницы контактов -->
+    <section style="padding: 60px 0;">
+        <div class="container">
+            <div class="contacts-grid">
+                <!-- Контактная информация -->
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <i class="fas fa-phone-alt"></i>
+                    </div>
+                    <h3 style="font-size: 1.5rem; margin-bottom: 15px; color: #333;">Контакты</h3>
+                    <div class="contact-info">
+                        <p><strong>Телефон:</strong> 8 (800) 555-35-35</p>
+                        <p><strong>Email:</strong> order@hinkal.ru</p>
+                        <p><strong>Время работы:</strong> 10:00 - 23:00</p>
+                        <p style="margin-top: 20px;">
+                            Звоните нам в любое время в течение рабочего дня. 
+                            Наши операторы помогут вам оформить заказ и ответят на все вопросы.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Информация о доставке -->
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <i class="fas fa-truck"></i>
+                    </div>
+                    <h3 style="font-size: 1.5rem; margin-bottom: 15px; color: #333;">Доставка</h3>
+                    <div class="contact-info">
+                        <p><strong>Бесплатная доставка</strong> при заказе от 1000₽</p>
+                        <p><strong>Среднее время доставки:</strong> 30-60 минут</p>
+                        <p><strong>Зона доставки:</strong> весь город</p>
+                        <p style="margin-top: 20px;">
+                            Мы доставляем заказы быстро и точно в указанное время. 
+                            Бесплатная доставка действует при сумме заказа от 1000 рублей.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Способы оплаты -->
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <h3 style="font-size: 1.5rem; margin-bottom: 15px; color: #333;">Оплата</h3>
+                    <div class="contact-info">
+                        <p><strong>Наличными</strong> курьеру</p>
+                        <p><strong>Банковской картой</strong> онлайн</p>
+                        <p><strong>Электронные кошельки</strong></p>
+                        <p style="margin-top: 20px;">
+                            Вы можете оплатить заказ любым удобным способом. 
+                            Все онлайн-платежи защищены и проходят через безопасные платежные системы.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Дополнительная информация -->
+            <div style="text-align: center; margin-top: 60px; padding: 40px; background: #f9f9f9; border-radius: 10px; border: 2px solid #000;">
+                <h3 style="font-size: 1.5rem; margin-bottom: 20px; color: #333;">Как связаться с нами?</h3>
+                <div style="max-width: 800px; margin: 0 auto; font-size: 1.1rem;">
+                    <p>Если у вас возникли вопросы по заказу, вы хотите оставить отзыв или предложение по работе нашей службы доставки, вы можете:</p>
+                    <ul style="text-align: left; margin-top: 20px; padding-left: 20px;">
+                        <li>Позвонить по телефону горячей линии 8 (800) 555-35-35</li>
+                        <li>Написать на электронную почту order@hinkal.ru</li>
+                        <li>Использовать форму заказа на главной странице сайта</li>
+                        <li>Обратиться к курьеру при получении заказа</li>
+                    </ul>
+                    <p style="margin-top: 30px;">
+                        Мы ценим каждого клиента и стараемся сделать процесс заказа максимально удобным и быстрым.
+                        Если у вас есть пожелания по улучшению нашей работы, мы будем рады их услышать!
+                    </p>
+                </div>
+                <a href="index.html#order-form" style="margin-top: 30px; display: inline-block; background: #000; color: white; padding: 12px 25px; border-radius: 5px; text-decoration: none; font-weight: 600; transition: background 0.3s; border: 2px solid #000;">
+                    <i class="fas fa-shopping-cart" style="margin-right: 10px;"></i>
+                    Перейти к оформлению заказа
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Футер -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-links">
+                <a href="index.html" class="footer-link">Главная</a>
+                <a href="menu.html" class="footer-link">Меню</a>
+                <a href="#" class="footer-link cart-link">Корзина</a>
+                <a href="contacts.html" class="footer-link">Контакты</a>
+                <a href="#" class="footer-link">Политика конфиденциальности</a>
+                <a href="#" class="footer-link">Условия использования</a>
+            </div>
+            <div class="copyright">
+                © 2023 Хинкаль. Все права защищены.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Модальное окно авторизации -->
+    <div class="auth-modal" id="authModal">
+        <button class="close-auth" id="closeAuth">×</button>
+        <div class="auth-content">
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-tab="login">Вход</button>
+                <button class="auth-tab" data-tab="register">Регистрация</button>
+            </div>
+            
+            <!-- Форма входа -->
+            <form class="auth-form active" id="loginForm">
+                <h3>Вход в аккаунт</h3>
+                <input type="email" id="loginEmail" placeholder="Email" required>
+                <input type="password" id="loginPassword" placeholder="Пароль" required>
+                <button type="submit" class="btn btn-primary">Войти</button>
+            </form>
+            
+            <!-- Форма регистрации -->
+            <form class="auth-form" id="registerForm">
+                <h3>Создать аккаунт</h3>
+                <input type="text" id="registerName" placeholder="Имя" required>
+                <input type="email" id="registerEmail" placeholder="Email" required>
+                <input type="tel" id="registerPhone" placeholder="Телефон" required>
+                <input type="password" id="registerPassword" placeholder="Пароль" required>
+                <input type="password" id="registerConfirm" placeholder="Подтвердите пароль" required>
+                <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Уведомление -->
+    <div class="notification" id="notification"></div>
+
+    <script>
+        // ==================== ОСНОВНОЙ СКРИПТ С ИНТЕГРАЦИЕЙ БД ====================
+        
+        // Бургер-меню
+        const burger = document.querySelector('.burger');
+        const navLinks = document.querySelector('.nav-links');
+        
+        burger.addEventListener('click', function() {
+            navLinks.classList.toggle('active');
+        });
+        
+        // Закрытие меню при клике на ссылку
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+            });
+        });
+        
+        // Корзина
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        
+        function updateCartCounter() {
+            const cartCount = document.querySelector('.cart-count');
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            
+            if (cartCount) {
+                if (totalItems > 0) {
+                    cartCount.textContent = totalItems;
+                    cartCount.style.display = 'flex';
+                } else {
+                    cartCount.style.display = 'none';
+                }
+            }
+        }
+        
+        // Инициализация счетчика корзины
+        updateCartCounter();
+        
+        // Авторизация
+        const authModal = document.getElementById('authModal');
+        const authBtn = document.getElementById('authBtn');
+        const closeAuth = document.getElementById('closeAuth');
+        const authTabs = document.querySelectorAll('.auth-tab');
+        const authForms = document.querySelectorAll('.auth-form');
+        const notification = document.getElementById('notification');
+        
+        // Функция для показа уведомлений
+        function showNotification(message, type = 'info') {
+            notification.textContent = message;
+            
+            // Устанавливаем цвет в зависимости от типа
+            if (type === 'success') {
+                notification.style.backgroundColor = '#4CAF50';
+                notification.style.borderColor = '#4CAF50';
+            } else if (type === 'error') {
+                notification.style.backgroundColor = '#ff3860';
+                notification.style.borderColor = '#ff3860';
+            } else {
+                notification.style.backgroundColor = '#000';
+                notification.style.borderColor = '#fff';
+            }
+            
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Обработка клика по ссылке "Корзина"
+        document.querySelectorAll('.cart-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                if (currentUser) {
+                    window.location.href = 'cart.html';
+                } else {
+                    authModal.classList.add('active');
+                    showNotification('Для доступа к корзине необходимо войти в систему', 'error');
+                }
+            });
+        });
+        
+        // Открытие модального окна авторизации по кнопке "Войти"
+        authBtn.addEventListener('click', function() {
+            if (currentUser) {
+                if (confirm(`Вы вошли как ${currentUser.name}. Выйти из аккаунта?`)) {
+                    // Отправляем запрос на выход
+                    fetch('auth_handler.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: 'action=logout'
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        localStorage.removeItem('currentUser');
+                        currentUser = null;
+                        authBtn.textContent = 'Войти';
+                        showNotification('Вы вышли из аккаунта', 'success');
+                    })
+                    .catch(error => {
+                        console.error('Ошибка:', error);
+                        showNotification('Ошибка соединения с сервером', 'error');
+                    });
+                }
+            } else {
+                authModal.classList.add('active');
+            }
+        });
+        
+        // Закрытие модального окна
+        closeAuth.addEventListener('click', function() {
+            authModal.classList.remove('active');
+        });
+        
+        // Закрытие по клику вне окна
+        authModal.addEventListener('click', function(e) {
+            if (e.target === authModal) {
+                authModal.classList.remove('active');
+            }
+        });
+        
+        // Переключение между вкладками
+        authTabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                const tabName = this.getAttribute('data-tab');
+                
+                authTabs.forEach(t => t.classList.remove('active'));
+                authForms.forEach(f => f.classList.remove('active'));
+                
+                this.classList.add('active');
+                document.getElementById(tabName + 'Form').classList.add('active');
+            });
+        });
+        
+        // ==================== ИНТЕГРАЦИЯ С БАЗОЙ ДАННЫХ ====================
+        
+        // Обработка формы входа
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const submitBtn = this.querySelector('button');
+            
+            // Валидация
+            if (!email || !password) {
+                showNotification('Заполните все поля', 'error');
+                return;
+            }
+            
+            // Отправка данных на сервер
+            const formData = new FormData();
+            formData.append('action', 'login');
+            formData.append('email', email);
+            formData.append('password', password);
+            
+            // Показываем состояние загрузки
+            submitBtn.textContent = 'Вход...';
+            submitBtn.classList.add('loading');
+            submitBtn.disabled = true;
+            
+            fetch('auth_handler.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Сохраняем данные пользователя
+                    currentUser = data.user;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    
+                    // Обновляем интерфейс
+                    authModal.classList.remove('active');
+                    authBtn.textContent = 'Выйти';
+                    showNotification(data.message, 'success');
+                    
+                    // Очищаем форму
+                    document.getElementById('loginForm').reset();
+                } else {
+                    showNotification(data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+                showNotification('Ошибка соединения с сервером', 'error');
+            })
+            .finally(() => {
+                // Восстанавливаем кнопку
+                submitBtn.textContent = 'Войти';
+                submitBtn.classList.remove('loading');
+                submitBtn.disabled = false;
+            });
+        });
+        
+        // Обработка формы регистрации
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const phone = document.getElementById('registerPhone').value;
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('registerConfirm').value;
+            const submitBtn = this.querySelector('button');
+            
+            // Валидация
+            const errors = [];
+            if (!name) errors.push('Введите имя');
+            if (!email) errors.push('Введите email');
+            if (!phone) errors.push('Введите телефон');
+            if (!password) errors.push('Введите пароль');
+            if (password !== confirmPassword) errors.push('Пароли не совпадают');
+            
+            if (errors.length > 0) {
+                showNotification(errors.join('<br>'), 'error');
+                return;
+            }
+            
+            // Отправка данных на сервер
+            const formData = new FormData();
+            formData.append('action', 'register');
+            formData.append('name', name);
+            formData.append('email', email);
+            formData.append('phone', phone);
+            formData.append('password', password);
+            formData.append('confirm_password', confirmPassword);
+            
+            // Показываем состояние загрузки
+            submitBtn.textContent = 'Регистрация...';
+            submitBtn.classList.add('loading');
+            submitBtn.disabled = true;
+            
+            fetch('auth_handler.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Сохраняем данные пользователя
+                    currentUser = data.user;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    
+                    // Обновляем интерфейс
+                    authModal.classList.remove('active');
+                    authBtn.textContent = 'Выйти';
+                    showNotification(data.message, 'success');
+                    
+                    // Очищаем форму
+                    document.getElementById('registerForm').reset();
+                } else {
+                    showNotification(data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+                showNotification('Ошибка соединения с сервером', 'error');
+            })
+            .finally(() => {
+                // Восстанавливаем кнопку
+                submitBtn.textContent = 'Зарегистрироваться';
+                submitBtn.classList.remove('loading');
+                submitBtn.disabled = false;
+            });
+        });
+        
+        // Проверка авторизации при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            if (currentUser) {
+                authBtn.textContent = 'Выйти';
+            }
+            
+            // Загружаем данные корзины из localStorage
+            const savedCart = localStorage.getItem('cart');
+            if (savedCart) {
+                try {
+                    cart = JSON.parse(savedCart);
+                    updateCartCounter();
+                } catch (e) {
+                    console.error('Ошибка при загрузке корзины:', e);
+                    cart = [];
+                }
+            }
+        });
+    </script>
+</body>
+</html>

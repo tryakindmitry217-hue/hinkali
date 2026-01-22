@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <title>Шашлык из свинины - Хинкаль</title>
+    <meta name="description" content="Нежный и сочный шашлык из свиной шеи, маринованный с луком и специями">
+    <meta name="keywords" content="шашлык, свинина, грузинская кухня, мясо, барбекю">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <style>
+        /* Общие стили */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #000;
+            background: #fff;
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid #000;
+            background: #fff;
+            color: #000;
+        }
+        
+        .btn:hover {
+            background: #000;
+            color: #fff;
+        }
+        
+        .btn-primary {
+            background: #000;
+            color: #fff;
+        }
+        
+        .btn-primary:hover {
+            background: #fff;
+            color: #000;
+        }
+        
+        /* Шапка */
+        .header {
+            background: #000;
+            color: #fff;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .header-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 0;
+        }
+        
+        .logo {
+            width: 150px;
+            height: auto;
+        }
+        
+        /* Навигация */
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+        
+        .nav-link {
+            color: #fff;
+            font-size: 1rem;
+            transition: color 0.3s;
+            position: relative;
+        }
+        
+        .nav-link:hover {
+            color: #ccc;
+        }
+        
+        .nav-link.active {
+            color: #fff;
+            font-weight: bold;
+        }
+        
+        .cart-indicator {
+            position: relative;
+        }
+        
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #fff;
+            color: #000;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        /* Бургер-меню */
+        .burger {
+            display: none;
+            flex-direction: column;
+            gap: 4px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 5px;
+        }
+        
+        .burger-line {
+            width: 25px;
+            height: 3px;
+            background: #fff;
+            border-radius: 2px;
+        }
+        
+        /* Основной контент страницы блюда */
+        .dish-page {
+            padding: 120px 20px 80px;
+            background: #fff;
+            min-height: 100vh;
+        }
+        
+        /* Хлебные крошки */
+        .breadcrumb {
+            margin-bottom: 40px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .breadcrumb a {
+            color: #666;
+            transition: color 0.3s;
+        }
+        
+        .breadcrumb a:hover {
+            color: #000;
+        }
+        
+        .breadcrumb span {
+            color: #000;
+            font-weight: 600;
+        }
+        
+        /* Детальная информация о блюде */
+        .dish-detail {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: start;
+        }
+        
+        .dish-image-large {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: 15px;
+            border: 2px solid #000;
+        }
+        
+        .dish-info h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #000;
+        }
+        
+        .dish-price {
+            font-size: 2.5rem;
+            color: #000;
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+        
+        .dish-description {
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            color: #666;
+            line-height: 1.8;
+        }
+        
+        .dish-ingredients {
+            margin-bottom: 30px;
+        }
+        
+        .dish-ingredients h3 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: #000;
+        }
+        
+        .ingredients-list {
+            list-style: none;
+        }
+        
+        .ingredients-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            color: #666;
+        }
+        
+        .nutrition-info {
+            background: #f5f5f5;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border: 1px solid #eee;
+        }
+        
+        .nutrition-info h3 {
+            margin-bottom: 15px;
+            color: #000;
+        }
+        
+        .nutrition-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .nutrition-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            color: #666;
+        }
+        
+        .nutrition-item span:first-child {
+            font-weight: 600;
+        }
+        
+        .order-section {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+        }
+        
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .quantity-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #000;
+            background: #fff;
+            color: #000;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .quantity-btn:hover {
+            background: #000;
+            color: #fff;
+        }
+        
+        .quantity {
+            font-size: 1.5rem;
+            font-weight: 600;
+            min-width: 50px;
+            text-align: center;
+        }
+        
+        .add-to-cart-large {
+            background: #000;
+            color: #fff;
+            padding: 15px 40px;
+            border-radius: 8px;
+            border: 2px solid #000;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: block;
+            width: 100%;
+        }
+        
+        .add-to-cart-large:hover {
+            background: #fff;
+            color: #000;
+        }
+        
+        .add-to-cart-large.disabled {
+            background: #ccc;
+            border-color: #ccc;
+            color: #666;
+            cursor: not-allowed;
+        }
+        
+        /* Футер */
+        .footer {
+            background: #000;
+            color: #fff;
+            padding: 50px 20px;
+            text-align: center;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .footer-link {
+            color: #ccc;
+            transition: color 0.3s;
+        }
+        
+        .footer-link:hover {
+            color: #fff;
+        }
+        
+        .copyright {
+            color: #999;
+            font-size: 0.9rem;
+        }
+        
+        /* Модальное окно авторизации */
+        .auth-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            display: none;
+        }
+        
+        .auth-modal.active {
+            display: flex;
+        }
+        
+        .auth-content {
+            background: #fff;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            border: 2px solid #000;
+            overflow: hidden;
+        }
+        
+        .auth-tabs {
+            display: flex;
+            border-bottom: 2px solid #000;
+        }
+        
+        .auth-tab {
+            flex: 1;
+            padding: 15px;
+            background: none;
+            border: none;
+            font-size: 1.1rem;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .auth-tab.active {
+            background: #000;
+            color: #fff;
+        }
+        
+        .auth-form {
+            padding: 30px;
+            display: none;
+        }
+        
+        .auth-form.active {
+            display: block;
+        }
+        
+        .auth-form h3 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #000;
+        }
+        
+        .auth-form input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #000;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .auth-form button {
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .close-auth {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 2rem;
+            cursor: pointer;
+        }
+        
+        /* Уведомления */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #000;
+            color: #fff;
+            padding: 15px 25px;
+            border-radius: 8px;
+            border: 2px solid #fff;
+            z-index: 1001;
+            display: none;
+        }
+        
+        .notification.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .dish-page {
+                padding: 100px 20px 60px;
+            }
+            
+            .dish-detail {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .dish-image-large {
+                height: 300px;
+            }
+            
+            .dish-info h1 {
+                font-size: 2rem;
+            }
+            
+            .dish-price {
+                font-size: 2rem;
+            }
+            
+            .nutrition-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-links {
+                display: none;
+                position: fixed;
+                top: 60px;
+                left: 0;
+                right: 0;
+                background: #000;
+                flex-direction: column;
+                padding: 20px;
+                gap: 20px;
+                box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            }
+            
+            .nav-links.active {
+                display: flex;
+            }
+            
+            .burger {
+                display: flex;
+            }
+        }
+        
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .dish-image-large {
+                height: 350px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Шапка -->
+    <header class="header">
+        <div class="container">
+            <div class="header-wrapper">
+                <a href="index.html">
+                    <img src="images/0ced8a2f-18b3-40a9-9905-484711090829.png" alt="Хинкаль" class="logo">
+                </a>
+                
+                <button class="burger">
+                    <span class="burger-line"></span>
+                    <span class="burger-line"></span>
+                    <span class="burger-line"></span>
+                </button>
+                
+                <nav class="nav-links">
+                    <a href="index.html" class="nav-link">Главная</a>
+                    <a href="menu.html" class="nav-link">Меню</a>
+                    <a href="contacts.html" class="nav-link">Контакты</a>
+                    <a href="#" class="nav-link cart-indicator cart-link">
+                        Корзина
+                        <span class="cart-count">0</span>
+                    </a>
+                    <button class="btn auth-btn" id="authBtn">Войти</button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Основной контент страницы блюда -->
+    <main class="dish-page">
+        <div class="container">
+            <!-- Хлебные крошки -->
+            <div class="breadcrumb">
+                <a href="index.html">Главная</a> &gt; 
+                <a href="menu.html">Меню</a> &gt; 
+                <span>Шашлык из свинины</span>
+            </div>
+            
+            <!-- Детальная страница блюда -->
+            <div class="dish-detail">
+                <div class="dish-image">
+                    <img src="images/shashlik-svinina.jpg" alt="Шашлык из свинины" class="dish-image-large">
+                </div>
+                
+                <div class="dish-info">
+                    <h1>Шашлык из свинины</h1>
+                    <div class="dish-price">550₽</div>
+                    
+                    <p class="dish-description">
+                        Классический грузинский шашлык из свиной шеи. Мясо маринуется с репчатым луком, 
+                        кинзой, солью и перцем, затем жарится на углях. Подается с свежим луком и зеленью. 
+                        Идеальное блюдо для праздничного стола или пикника.
+                    </p>
+                    
+                    <div class="dish-ingredients">
+                        <h3>Состав:</h3>
+                        <ul class="ingredients-list">
+                            <li>Свиная шея (молодая)</li>
+                            <li>Лук репчатый (для маринада)</li>
+                            <li>Кинза (свежая)</li>
+                            <li>Соль, перец черный молотый</li>
+                            <li>Лук свежий (для подачи)</li>
+                            <li>Зелень (петрушка, кинза)</li>
+                            <li>Зерна граната (для украшения)</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="nutrition-info">
+                        <h3>Пищевая ценность (на 100г):</h3>
+                        <div class="nutrition-grid">
+                            <div class="nutrition-item">
+                                <span>Калории:</span>
+                                <span>242 ккал</span>
+                            </div>
+                            <div class="nutrition-item">
+                                <span>Белки:</span>
+                                <span>18.2 г</span>
+                            </div>
+                            <div class="nutrition-item">
+                                <span>Жиры:</span>
+                                <span>16.5 г</span>
+                            </div>
+                            <div class="nutrition-item">
+                                <span>Углеводы:</span>
+                                <span>3.5 г</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="order-section">
+                        <div class="quantity-selector">
+                            <button class="quantity-btn minus">-</button>
+                            <span class="quantity">1</span>
+                            <button class="quantity-btn plus">+</button>
+                        </div>
+                        
+                        <button class="add-to-cart-large" id="add-to-cart-btn">Добавить в корзину</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Футер -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-links">
+                <a href="index.html" class="footer-link">Главная</a>
+                <a href="menu.html" class="footer-link">Меню</a>
+                <a href="contacts.html" class="footer-link">Контакты</a>
+                <a href="#" class="footer-link">Политика конфиденциальности</a>
+                <a href="#" class="footer-link">Условия использования</a>
+            </div>
+            <div class="copyright">
+                © 2023 Хинкаль. Все права защищены.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Модальное окно авторизации -->
+    <div class="auth-modal" id="authModal">
+        <button class="close-auth" id="closeAuth">×</button>
+        <div class="auth-content">
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-tab="login">Вход</button>
+                <button class="auth-tab" data-tab="register">Регистрация</button>
+            </div>
+            
+            <!-- Форма входа -->
+            <form class="auth-form active" id="loginForm">
+                <h3>Вход в аккаунт</h3>
+                <input type="email" id="loginEmail" placeholder="Email" required>
+                <input type="password" id="loginPassword" placeholder="Пароль" required>
+                <button type="submit" class="btn btn-primary">Войти</button>
+            </form>
+            
+            <!-- Форма регистрации -->
+            <form class="auth-form" id="registerForm">
+                <h3>Создать аккаунт</h3>
+                <input type="text" id="registerName" placeholder="Имя" required>
+                <input type="email" id="registerEmail" placeholder="Email" required>
+                <input type="tel" id="registerPhone" placeholder="Телефон" required>
+                <input type="password" id="registerPassword" placeholder="Пароль" required>
+                <input type="password" id="registerConfirm" placeholder="Подтвердите пароль" required>
+                <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Уведомление -->
+    <div class="notification" id="notification"></div>
+
+    <script>
+        // Бургер-меню
+        const burger = document.querySelector('.burger');
+        const navLinks = document.querySelector('.nav-links');
+        
+        burger.addEventListener('click', function() {
+            navLinks.classList.toggle('active');
+        });
+        
+        // Закрытие меню при клике на ссылку
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+            });
+        });
+        
+        // Корзина
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        
+        function updateCartCounter() {
+            const cartCount = document.querySelector('.cart-count');
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            
+            if (cartCount) {
+                if (totalItems > 0) {
+                    cartCount.textContent = totalItems;
+                    cartCount.style.display = 'flex';
+                } else {
+                    cartCount.style.display = 'none';
+                }
+            }
+        }
+        
+        // Инициализация счетчика корзины
+        updateCartCounter();
+        
+        // Авторизация
+        const authModal = document.getElementById('authModal');
+        const authBtn = document.getElementById('authBtn');
+        const closeAuth = document.getElementById('closeAuth');
+        const authTabs = document.querySelectorAll('.auth-tab');
+        const authForms = document.querySelectorAll('.auth-form');
+        const notification = document.getElementById('notification');
+        const addToCartBtn = document.getElementById('add-to-cart-btn');
+        
+        let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        
+        // Функция для показа уведомлений
+        function showNotification(message, type = 'info') {
+            notification.textContent = message;
+            
+            if (type === 'success') {
+                notification.style.backgroundColor = '#4CAF50';
+                notification.style.borderColor = '#4CAF50';
+            } else if (type === 'error') {
+                notification.style.backgroundColor = '#ff3860';
+                notification.style.borderColor = '#ff3860';
+            } else {
+                notification.style.backgroundColor = '#000';
+                notification.style.borderColor = '#fff';
+            }
+            
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Обработка клика по ссылке "Корзина"
+        document.querySelectorAll('.cart-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                if (currentUser) {
+                    window.location.href = 'cart.html';
+                } else {
+                    authModal.classList.add('active');
+                    showNotification('Для доступа к корзине необходимо войти в систему', 'error');
+                }
+            });
+        });
+        
+        // Открытие модального окна авторизации по кнопке "Войти"
+        authBtn.addEventListener('click', function() {
+            if (currentUser) {
+                if (confirm(`Вы вошли как ${currentUser.name}. Выйти из аккаунта?`)) {
+                    localStorage.removeItem('currentUser');
+                    currentUser = null;
+                    authBtn.textContent = 'Войти';
+                    showNotification('Вы вышли из аккаунта', 'success');
+                    updateCartButtonState();
+                }
+            } else {
+                authModal.classList.add('active');
+            }
+        });
+        
+        // Закрытие модального окна
+        closeAuth.addEventListener('click', function() {
+            authModal.classList.remove('active');
+        });
+        
+        // Закрытие по клику вне окна
+        authModal.addEventListener('click', function(e) {
+            if (e.target === authModal) {
+                authModal.classList.remove('active');
+            }
+        });
+        
+        // Переключение между вкладками
+        authTabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                const tabName = this.getAttribute('data-tab');
+                
+                authTabs.forEach(t => t.classList.remove('active'));
+                authForms.forEach(f => f.classList.remove('active'));
+                
+                this.classList.add('active');
+                document.getElementById(tabName + 'Form').classList.add('active');
+            });
+        });
+        
+        // Управление количеством
+        const minusBtn = document.querySelector('.minus');
+        const plusBtn = document.querySelector('.plus');
+        const quantityDisplay = document.querySelector('.quantity');
+        
+        let quantity = 1;
+        
+        if (minusBtn && plusBtn && quantityDisplay) {
+            minusBtn.addEventListener('click', () => {
+                if (quantity > 1) {
+                    quantity--;
+                    quantityDisplay.textContent = quantity;
+                }
+            });
+            
+            plusBtn.addEventListener('click', () => {
+                quantity++;
+                quantityDisplay.textContent = quantity;
+            });
+        }
+        
+        // Обновление состояния кнопки "Добавить в корзину"
+        function updateCartButtonState() {
+            if (!currentUser && addToCartBtn) {
+                addToCartBtn.classList.add('disabled');
+                addToCartBtn.textContent = 'Войдите для добавления в корзину';
+                addToCartBtn.style.cursor = 'pointer';
+                
+                // Удаляем старые обработчики и добавляем новый
+                addToCartBtn.replaceWith(addToCartBtn.cloneNode(true));
+                const newAddToCartBtn = document.getElementById('add-to-cart-btn');
+                
+                newAddToCartBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    authModal.classList.add('active');
+                    showNotification('Для добавления в корзину необходимо войти в систему', 'error');
+                });
+            } else if (addToCartBtn) {
+                addToCartBtn.classList.remove('disabled');
+                addToCartBtn.textContent = 'Добавить в корзину';
+                addToCartBtn.style.cursor = 'pointer';
+                
+                // Удаляем старый обработчик и добавляем новый
+                addToCartBtn.replaceWith(addToCartBtn.cloneNode(true));
+                const newAddToCartBtn = document.getElementById('add-to-cart-btn');
+                
+                newAddToCartBtn.addEventListener('click', function() {
+                    const product = {
+                        id: 'shashlik-svinina',
+                        name: 'Шашлык из свинины',
+                        price: 550,
+                        quantity: quantity,
+                        image: 'shashlik-svinina.jpg',
+                        link: 'shashlik-svinina.html',
+                        description: 'Свиная шея, лук, специи, зелень'
+                    };
+                    
+                    // Поиск товара в корзине
+                    const existingItem = cart.find(item => item.id === product.id);
+                    
+                    if (existingItem) {
+                        existingItem.quantity += product.quantity;
+                    } else {
+                        cart.push(product);
+                    }
+                    
+                    // Сохраняем в localStorage
+                    localStorage.setItem('cart', JSON.stringify(cart));
+                    
+                    // Обновляем счетчик
+                    updateCartCounter();
+                    
+                    // Показываем уведомление
+                    showNotification('Шашлык из свинины добавлен в корзину!', 'success');
+                    
+                    // Сброс количества
+                    quantity = 1;
+                    if (quantityDisplay) {
+                        quantityDisplay.textContent = quantity;
+                    }
+                });
+            }
+        }
+        
+        // Обработка формы входа
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            // Имитация успешного входа
+            if (email && password) {
+                currentUser = {
+                    id: 1,
+                    name: 'Пользователь',
+                    email: email
+                };
+                
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                authModal.classList.remove('active');
+                authBtn.textContent = 'Выйти';
+                showNotification('Вы успешно вошли в систему!', 'success');
+                updateCartButtonState();
+                
+                // Очищаем форму
+                document.getElementById('loginForm').reset();
+            } else {
+                showNotification('Заполните все поля', 'error');
+            }
+        });
+        
+        // Обработка формы регистрации
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const phone = document.getElementById('registerPhone').value;
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('registerConfirm').value;
+            
+            // Валидация
+            const errors = [];
+            if (!name) errors.push('Введите имя');
+            if (!email) errors.push('Введите email');
+            if (!phone) errors.push('Введите телефон');
+            if (!password) errors.push('Введите пароль');
+            if (password !== confirmPassword) errors.push('Пароли не совпадают');
+            
+            if (errors.length > 0) {
+                showNotification(errors.join('<br>'), 'error');
+                return;
+            }
+            
+            // Имитация успешной регистрации
+            currentUser = {
+                id: 1,
+                name: name,
+                email: email,
+                phone: phone
+            };
+            
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            authModal.classList.remove('active');
+            authBtn.textContent = 'Выйти';
+            showNotification('Регистрация успешна! Вы вошли в систему.', 'success');
+            updateCartButtonState();
+            
+            // Очищаем форму
+            document.getElementById('registerForm').reset();
+        });
+        
+        // Проверка авторизации при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            if (currentUser) {
+                authBtn.textContent = 'Выйти';
+            }
+            
+            // Загружаем данные корзины из localStorage
+            const savedCart = localStorage.getItem('cart');
+            if (savedCart) {
+                try {
+                    cart = JSON.parse(savedCart);
+                    updateCartCounter();
+                } catch (e) {
+                    console.error('Ошибка при загрузке корзины:', e);
+                    cart = [];
+                }
+            }
+            
+            updateCartButtonState();
+        });
+    </script>
+</body>
+</html>
