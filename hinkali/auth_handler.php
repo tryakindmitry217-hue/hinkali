@@ -1,8 +1,10 @@
 <?php
-// auth_handler.php - Обработчик авторизации и регистрации
-require_once 'config.php';
-
+// auth_handler.php - Обработчик авторизации и регистрации для PostgreSQL
 header('Content-Type: application/json');
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+require_once 'config.php';
 
 // Функция для отправки JSON ответа
 function sendAuthResponse($success, $message, $user = null) {
@@ -18,8 +20,13 @@ try {
     // Получаем действие
     $action = $_POST['action'] ?? '';
     
+    // Логируем запрос для отладки
+    if (DEBUG_MODE) {
+        error_log("Auth Action: " . $action);
+    }
+    
     if ($action === 'login') {
-        // Обработка входа
+        // ==================== ОБРАБОТКА ВХОДА ====================
         $email = trim($_POST['email'] ?? '');
         $password = trim($_POST['password'] ?? '');
         
@@ -27,7 +34,7 @@ try {
             sendAuthResponse(false, 'Заполните все поля');
         }
         
-        // Поиск пользователя
+        // Поиск пользователя в PostgreSQL
         $pdo = getDBConnection();
         $stmt = $pdo->prepare(
             "SELECT id, username, email, password, full_name, phone FROM users WHERE email = ?"
@@ -56,7 +63,7 @@ try {
         }
         
     } elseif ($action === 'register') {
-        // Обработка регистрации
+        // ==================== ОБРАБОТКА РЕГИСТРАЦИИ ====================
         $name = trim($_POST['name'] ?? '');
         $email = trim($_POST['email'] ?? '');
         $phone = trim($_POST['phone'] ?? '');
@@ -95,13 +102,17 @@ try {
         // Создание пользователя
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
         
+        // Для PostgreSQL используем RETURNING чтобы получить ID новой записи
         $stmt = $pdo->prepare(
-            "INSERT INTO users (username, email, password, full_name, phone) VALUES (?, ?, ?, ?, ?)"
+            "INSERT INTO users (username, email, password, full_name, phone, created_at) 
+             VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP) RETURNING id"
         );
         
         $stmt->execute([$email, $email, $hashed_password, $name, $phone]);
         
-        $user_id = $pdo->lastInsertId();
+        // Получаем ID новой записи напрямую из результата запроса
+        $result = $stmt->fetch();
+        $user_id = $result['id'];
         
         // Получаем созданного пользователя
         $stmt = $pdo->prepare(
@@ -128,11 +139,11 @@ try {
     }
     
 } catch (PDOException $e) {
-    error_log("Auth Handler Error: " . $e->getMessage());
-    sendAuthResponse(false, 'Ошибка базы данных');
+    error_log("Auth Handler PDO Error: " . $e->getMessage());
+    sendAuthResponse(false, 'Ошибка базы данных: ' . (DEBUG_MODE ? $e->getMessage() : ''));
     
 } catch (Exception $e) {
-    error_log("Auth Handler Error: " . $e->getMessage());
-    sendAuthResponse(false, 'Произошла ошибка');
+    error_log("Auth Handler General Error: " . $e->getMessage());
+    sendAuthResponse(false, 'Произошла ошибка: ' . (DEBUG_MODE ? $e->getMessage() : ''));
 }
 ?>

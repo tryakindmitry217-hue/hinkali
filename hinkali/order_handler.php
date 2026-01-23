@@ -1,11 +1,11 @@
 <?php
-// order_handler.php - Обработчик заказов
+// order_handler.php - Обработчик заказов для PostgreSQL
 header('Content-Type: application/json');
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
-// Подключаем конфигурацию
 require_once 'config.php';
 
-// Функция для отправки JSON ответа
 function sendJsonResponse($success, $message, $data = []) {
     echo json_encode([
         'success' => $success,
@@ -30,10 +30,9 @@ try {
     $cart = $_POST['cart'] ?? '[]';
     $user_id = $_POST['user_id'] ?? 0;
     
-    // Если user_id не передан, пытаемся получить из currentUser
-    if (!$user_id && isset($_POST['currentUser'])) {
-        $currentUser = json_decode($_POST['currentUser'], true);
-        $user_id = $currentUser['id'] ?? 0;
+    // Логируем полученные данные для отладки
+    if (DEBUG_MODE) {
+        error_log("Order Data - Name: $name, Phone: $phone, UserID: $user_id");
     }
     
     // Валидация
@@ -54,7 +53,7 @@ try {
     }
     
     // Валидация телефона
-    $phone = preg_replace('/[^0-9]/', '', $phone);
+    $phone = preg_replace('/[^0-9+]/', '', $phone);
     if (strlen($phone) < 10) {
         sendJsonResponse(false, 'Некорректный номер телефона');
     }
@@ -89,9 +88,10 @@ try {
     
     try {
         // Сохраняем заказ в базу данных
+        // Для PostgreSQL используем RETURNING чтобы получить ID новой записи
         $stmt = $pdo->prepare(
-            "INSERT INTO orders (user_id, customer_name, phone, address, delivery_time, comment, total_amount, status) 
-             VALUES (?, ?, ?, ?, ?, ?, ?, 'pending')"
+            "INSERT INTO orders (user_id, customer_name, phone, address, delivery_time, comment, total_amount, status, created_at) 
+             VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', CURRENT_TIMESTAMP) RETURNING id"
         );
         
         // Если user_id = 0, устанавливаем NULL для внешнего ключа
@@ -107,22 +107,22 @@ try {
             $total_amount
         ]);
         
-        $order_id = $pdo->lastInsertId();
+        // Получаем ID новой записи напрямую из результата запроса
+        $result = $stmt->fetch();
+        $order_id = $result['id'];
         
-        // Сохраняем детали заказа (в реальном проекте это была бы отдельная таблица order_items)
-        // Для простоты сохраним как JSON в поле comment
+        // Сохраняем детали заказа как JSON
         $order_details = json_encode([
             'items' => $items_details,
             'delivery_fee' => $delivery_fee,
             'subtotal' => $total_amount - $delivery_fee,
             'total' => $total_amount
-        ], JSON_UNESCAPED_UNICODE);
+        ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
         
         // Обновляем комментарий с деталями заказа
-        $stmt = $pdo->prepare(
-            "UPDATE orders SET comment = CONCAT(COALESCE(comment, ''), '\n\nДетали заказа:\n', ?) WHERE id = ?"
-        );
-        $stmt->execute([$order_details, $order_id]);
+        $updated_comment = ($comment ? $comment . "\n\n" : "") . "Детали заказа:\n" . $order_details;
+        $stmt = $pdo->prepare("UPDATE orders SET comment = ? WHERE id = ?");
+        $stmt->execute([$updated_comment, $order_id]);
         
         // Фиксируем транзакцию
         $pdo->commit();
@@ -147,13 +147,11 @@ try {
     }
     
 } catch (PDOException $e) {
-    // Ошибка базы данных
-    error_log("Database Error: " . $e->getMessage());
-    sendJsonResponse(false, 'Ошибка базы данных. Пожалуйста, попробуйте позже.');
+    error_log("Order Handler PDO Error: " . $e->getMessage());
+    sendJsonResponse(false, 'Ошибка базы данных: ' . (DEBUG_MODE ? $e->getMessage() : 'Пожалуйста, попробуйте позже.'));
     
 } catch (Exception $e) {
-    // Общая ошибка
-    error_log("Order Handler Error: " . $e->getMessage());
-    sendJsonResponse(false, 'Произошла ошибка при обработке заказа. Пожалуйста, попробуйте еще раз.');
+    error_log("Order Handler General Error: " . $e->getMessage());
+    sendJsonResponse(false, 'Произошла ошибка при обработке заказа: ' . (DEBUG_MODE ? $e->getMessage() : 'Пожалуйста, попробуйте еще раз.'));
 }
 ?>
