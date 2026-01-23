@@ -1,24 +1,25 @@
 <?php
 // order_handler.php - Обработчик заказов для PostgreSQL
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=utf-8');
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+ini_set('display_errors', 0);
 
 require_once 'config.php';
 
 function sendJsonResponse($success, $message, $data = []) {
+    http_response_code($success ? 200 : 400);
     echo json_encode([
         'success' => $success,
         'message' => $message,
         'data' => $data
-    ]);
+    ], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
 try {
     // Проверяем метод запроса
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-        sendJsonResponse(false, 'Неправильный метод запроса');
+        sendJsonResponse(false, 'Неправильный метод запроса. Используйте POST.');
     }
     
     // Получение данных из формы
@@ -28,11 +29,11 @@ try {
     $time = trim($_POST['time'] ?? '');
     $comment = trim($_POST['comment'] ?? '');
     $cart = $_POST['cart'] ?? '[]';
-    $user_id = $_POST['user_id'] ?? 0;
+    $user_id = isset($_POST['user_id']) ? (int)$_POST['user_id'] : 0;
     
     // Логируем полученные данные для отладки
     if (DEBUG_MODE) {
-        error_log("Order Data - Name: $name, Phone: $phone, UserID: $user_id");
+        error_log("Order Data - Name: $name, Phone: $phone, Address: $address, UserID: $user_id");
     }
     
     // Валидация
@@ -44,12 +45,14 @@ try {
     
     // Проверяем корзину
     $cart_items = json_decode($cart, true);
-    if (!$cart_items || !is_array($cart_items) || count($cart_items) === 0) {
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        $errors[] = 'Ошибка в данных корзины';
+    } elseif (!$cart_items || !is_array($cart_items) || count($cart_items) === 0) {
         $errors[] = 'Корзина пуста';
     }
     
     if (!empty($errors)) {
-        sendJsonResponse(false, implode('<br>', $errors));
+        sendJsonResponse(false, implode('. ', $errors));
     }
     
     // Валидация телефона
@@ -88,14 +91,17 @@ try {
     
     try {
         // Сохраняем заказ в базу данных
-        // Для PostgreSQL используем RETURNING чтобы получить ID новой записи
-        $stmt = $pdo->prepare(
-            "INSERT INTO orders (user_id, customer_name, phone, address, delivery_time, comment, total_amount, status, created_at) 
-             VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', CURRENT_TIMESTAMP) RETURNING id"
-        );
-        
         // Если user_id = 0, устанавливаем NULL для внешнего ключа
         $user_id_for_db = ($user_id > 0) ? $user_id : null;
+        
+        // Для PostgreSQL используем RETURNING чтобы получить ID новой записи
+        $stmt = $pdo->prepare(
+            "INSERT INTO orders (
+                user_id, customer_name, phone, address, 
+                delivery_time, comment, total_amount, status, created_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', CURRENT_TIMESTAMP) 
+            RETURNING id"
+        );
         
         $stmt->execute([
             $user_id_for_db,
@@ -117,10 +123,16 @@ try {
             'delivery_fee' => $delivery_fee,
             'subtotal' => $total_amount - $delivery_fee,
             'total' => $total_amount
-        ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+        ], JSON_UNESCAPED_UNICODE);
+        
+        // Если есть комментарий, объединяем с деталями заказа
+        if (!empty($comment)) {
+            $updated_comment = $comment . "\n\nДетали заказа:\n" . $order_details;
+        } else {
+            $updated_comment = "Детали заказа:\n" . $order_details;
+        }
         
         // Обновляем комментарий с деталями заказа
-        $updated_comment = ($comment ? $comment . "\n\n" : "") . "Детали заказа:\n" . $order_details;
         $stmt = $pdo->prepare("UPDATE orders SET comment = ? WHERE id = ?");
         $stmt->execute([$updated_comment, $order_id]);
         
@@ -142,7 +154,9 @@ try {
         
     } catch (Exception $e) {
         // Откатываем транзакцию в случае ошибки
-        $pdo->rollBack();
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
         throw $e;
     }
     
