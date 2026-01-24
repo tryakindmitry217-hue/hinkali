@@ -1,15 +1,14 @@
 <?php
 // config.php - Конфигурация базы данных для PostgreSQL на Render
 
-// Настройки отладки (включить для поиска ошибок)
+// config.php - ОБНОВЛЕННАЯ КОНФИГУРАЦИЯ
 define('DEBUG_MODE', true);
 
-// ==================== ПАРАМЕТРЫ ОТ ВАШЕЙ БАЗЫ RENDER ====================
-// Вставьте значения из раздела "Connections" вашей базы данных
-define('DB_HOST', 'dpg-d5q83t4oud1c73e0arl0-a.oregon-postgres.render.com'); // ПОЛНОЕ имя хоста
-define('DB_NAME', 'hinkali_db_q5k8'); // Имя базы из раздела Connections
-define('DB_USER', 'hinkali_db_q5k8_user'); // Пользователь из раздела Connections
-define('DB_PASS', 'YpTqZSxLN2O6HlW63lL6FdLSz0t5eKP7'); // Ваш пароль из Render
+// ИСПРАВЛЕНО: Используем переменные окружения с резервными значениями
+define('DB_HOST', $_ENV['DB_HOST'] ?? 'dpg-d5q83t4oud1c73e0arl0-a.oregon-postgres.render.com');
+define('DB_NAME', $_ENV['DB_NAME'] ?? 'hinkali_db_q5k8');
+define('DB_USER', $_ENV['DB_USER'] ?? 'hinkali_db_q5k8_user');
+define('DB_PASS', $_ENV['DB_PASS'] ?? 'YpTqZSxLN2O6HlW63lL6FdLSz0t5eKP7');
 
 // ==================== ФУНКЦИЯ ПОДКЛЮЧЕНИЯ ====================
 function getDBConnection() {
