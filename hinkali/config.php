@@ -5,11 +5,11 @@
 define('DEBUG_MODE', true);
 
 // ==================== ПАРАМЕТРЫ ОТ ВАШЕЙ БАЗЫ RENDER ====================
-// Используйте данные из раздела "Connections"
-define('DB_HOST', 'dpg-d5q83t4oud1c73e0arl0-a.oregon-postgres.render.com'); // ПОЛНОЕ доменное имя
-define('DB_NAME', 'hinkali_db_q5k8'); // Имя базы из Render
-define('DB_USER', 'hinkali_db_q5k8_user'); // Пользователь из Render
-define('DB_PASS', 'YpTqZSxLN2O6HlW63lL6FdLSz0t5eKP7'); // Замените на ваш пароль из Render
+// Вставьте значения из раздела "Connections" вашей базы данных
+define('DB_HOST', 'dpg-d5q83t4oud1c73e0arl0-a.oregon-postgres.render.com'); // ПОЛНОЕ имя хоста
+define('DB_NAME', 'hinkali_db_q5k8'); // Имя базы из раздела Connections
+define('DB_USER', 'hinkali_db_q5k8_user'); // Пользователь из раздела Connections
+define('DB_PASS', 'YpTqZSxLN2O6HlW63lL6FdLSz0t5eKP7'); // Ваш пароль из Render
 
 // ==================== ФУНКЦИЯ ПОДКЛЮЧЕНИЯ ====================
 function getDBConnection() {
@@ -26,8 +26,7 @@ function getDBConnection() {
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                 PDO::ATTR_EMULATE_PREPARES => false,
                 // КРИТИЧЕСКИ ВАЖНО: включаем SSL для Render
-                PDO::PGSQL_ATTR_SSL_MODE => PDO::PGSQL_SSL_REQUIRE,
-                PDO::PGSQL_ATTR_SSL_ROOT_CERT => true
+                PDO::PGSQL_ATTR_SSL_MODE => PDO::PGSQL_SSL_REQUIRE
             ]
         );
         
@@ -46,12 +45,12 @@ function getDBConnection() {
                 'success' => false,
                 'message' => 'Ошибка подключения к базе данных: ' . $e->getMessage(),
                 'details' => 'Проверьте параметры в config.php'
-            ]));
+            ], JSON_UNESCAPED_UNICODE));
         } else {
             die(json_encode([
                 'success' => false,
                 'message' => 'Ошибка подключения к серверу. Пожалуйста, попробуйте позже.'
-            ]));
+            ], JSON_UNESCAPED_UNICODE));
         }
     }
 }
@@ -59,8 +58,8 @@ function getDBConnection() {
 // ==================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ====================
 function logError($message) {
     if (DEBUG_MODE) {
-        $logMessage = date('Y-m-d H:i:s') . " - " . $message . PHP_EOL;
-        error_log($logMessage, 3, __DIR__ . '/error.log');
+        $logFile = dirname(__FILE__) . '/error.log';
+        file_put_contents($logFile, date('Y-m-d H:i:s') . " - " . $message . PHP_EOL, FILE_APPEND);
     }
 }
 
@@ -88,13 +87,7 @@ function fetchAll($sql, $params = []) {
 
 function recordExists($sql, $params = []) {
     $stmt = executeQuery($sql, $params);
-    return $stmt->rowCount() > 0;
-}
-
-function getLastInsertId($pdo) {
-    // Для PostgreSQL нужно получить ID из последовательности
-    $stmt = $pdo->query("SELECT LASTVAL()");
-    return $stmt->fetchColumn();
+    return $stmt->fetch() !== false;
 }
 
 // Функция для создания таблиц если они не существуют
@@ -145,6 +138,7 @@ function createTablesIfNotExist() {
             $pdo->exec($sql);
         }
         
+        logError("Tables created/verified successfully");
         return true;
         
     } catch (PDOException $e) {
@@ -152,4 +146,7 @@ function createTablesIfNotExist() {
         return false;
     }
 }
+
+// Автоматическое создание таблиц при первом подключении
+// createTablesIfNotExist();
 ?>
