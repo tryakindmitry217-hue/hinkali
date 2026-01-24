@@ -9,7 +9,7 @@ define('DEBUG_MODE', true);
 define('DB_HOST', 'dpg-d5q83t4oud1c73e0arl0-a.oregon-postgres.render.com'); // ПОЛНОЕ доменное имя
 define('DB_NAME', 'hinkali_db_q5k8'); // Имя базы из Render
 define('DB_USER', 'hinkali_db_q5k8_user'); // Пользователь из Render
-define('DB_PASS', 'ваш_пароль'); // Замените на ваш пароль из Render
+define('DB_PASS', 'YpTqZSxLN2O6HlW63lL6FdLSz0t5eKP7'); // Замените на ваш пароль из Render
 
 // ==================== ФУНКЦИЯ ПОДКЛЮЧЕНИЯ ====================
 function getDBConnection() {
