@@ -1,16 +1,15 @@
 <?php
 // config.php - Конфигурация базы данных для PostgreSQL на Render
-// ВСЕ НАСТРОЙКИ БЕРУТСЯ ИЗ ВАШЕГО External Database URL:
-// postgresql://hinkali_db_user:rQWOai98ha2maFbcZqZMngio7AFekYBD@dpg-d5pa7nc9c44c738aor3g-a.oregon-postgres.render.com/hinkali_db
 
 // Настройки отладки (включить для поиска ошибок)
 define('DEBUG_MODE', true);
 
-// ==================== ПАРАМЕТРЫ ИЗ ВАШЕГО RENDER DASHBOARD ====================
-define('DB_HOST', 'dpg-d5pa7nc9c44c738aor3g-a.oregon-postgres.render.com'); // Часть после @
-define('DB_NAME', 'hinkali_db');                    // Часть после последнего /
-define('DB_USER', 'hinkali_db_user');               // Часть после ://
-define('DB_PASS', 'rQWOai98ha2maFbcZqZMngio7AFekYBD'); // Часть между : и @
+// ==================== ПАРАМЕТРЫ ОТ ВАШЕЙ БАЗЫ RENDER ====================
+// Используйте данные из раздела "Connections"
+define('DB_HOST', 'dpg-d5q83t4oud1c73e0arl0-a.oregon-postgres.render.com'); // ПОЛНОЕ доменное имя
+define('DB_NAME', 'hinkali_db_q5k8'); // Имя базы из Render
+define('DB_USER', 'hinkali_db_q5k8_user'); // Пользователь из Render
+define('DB_PASS', 'ваш_пароль'); // Замените на ваш пароль из Render
 
 // ==================== ФУНКЦИЯ ПОДКЛЮЧЕНИЯ ====================
 function getDBConnection() {
@@ -27,7 +26,8 @@ function getDBConnection() {
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                 PDO::ATTR_EMULATE_PREPARES => false,
                 // КРИТИЧЕСКИ ВАЖНО: включаем SSL для Render
-                PDO::PGSQL_ATTR_SSL_MODE => PDO::PGSQL_SSL_REQUIRE
+                PDO::PGSQL_ATTR_SSL_MODE => PDO::PGSQL_SSL_REQUIRE,
+                PDO::PGSQL_ATTR_SSL_ROOT_CERT => true
             ]
         );
         
@@ -45,12 +45,7 @@ function getDBConnection() {
             die(json_encode([
                 'success' => false,
                 'message' => 'Ошибка подключения к базе данных: ' . $e->getMessage(),
-                'details' => [
-                    'host' => DB_HOST,
-                    'dbname' => DB_NAME,
-                    'user' => DB_USER,
-                    'ssl_mode' => 'PGSQL_SSL_REQUIRE'
-                ]
+                'details' => 'Проверьте параметры в config.php'
             ]));
         } else {
             die(json_encode([
@@ -65,8 +60,7 @@ function getDBConnection() {
 function logError($message) {
     if (DEBUG_MODE) {
         $logMessage = date('Y-m-d H:i:s') . " - " . $message . PHP_EOL;
-        // Записываем в файл error.log в той же папке
-        file_put_contents('error.log', $logMessage, FILE_APPEND);
+        error_log($logMessage, 3, __DIR__ . '/error.log');
     }
 }
 
@@ -103,14 +97,59 @@ function getLastInsertId($pdo) {
     return $stmt->fetchColumn();
 }
 
-// ==================== АВТО-ПРОВЕРКА ПРИ ПОДКЛЮЧЕНИИ ====================
-// Убрать после отладки
-if (DEBUG_MODE && php_sapi_name() !== 'cli') {
+// Функция для создания таблиц если они не существуют
+function createTablesIfNotExist() {
     try {
-        $test_pdo = getDBConnection();
-        error_log("AUTO-CHECK: Database connection successful to " . DB_HOST);
+        $pdo = getDBConnection();
+        
+        // Таблица users
+        $sqlUsers = "CREATE TABLE IF NOT EXISTS users (
+            id SERIAL PRIMARY KEY,
+            username VARCHAR(100) UNIQUE NOT NULL,
+            email VARCHAR(255) UNIQUE NOT NULL,
+            password VARCHAR(255) NOT NULL,
+            full_name VARCHAR(200),
+            phone VARCHAR(20),
+            last_login TIMESTAMP,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )";
+        
+        $pdo->exec($sqlUsers);
+        
+        // Таблица orders
+        $sqlOrders = "CREATE TABLE IF NOT EXISTS orders (
+            id SERIAL PRIMARY KEY,
+            user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+            customer_name VARCHAR(200) NOT NULL,
+            phone VARCHAR(20) NOT NULL,
+            address TEXT NOT NULL,
+            delivery_time VARCHAR(50) NOT NULL,
+            comment TEXT,
+            total_amount DECIMAL(10,2) NOT NULL,
+            status VARCHAR(50) DEFAULT 'pending',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )";
+        
+        $pdo->exec($sqlOrders);
+        
+        // Создаем индексы
+        $indexes = [
+            "CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)",
+            "CREATE INDEX IF NOT EXISTS idx_users_phone ON users(phone)",
+            "CREATE INDEX IF NOT EXISTS idx_orders_user_id ON orders(user_id)",
+            "CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status)",
+            "CREATE INDEX IF NOT EXISTS idx_orders_created_at ON orders(created_at DESC)"
+        ];
+        
+        foreach ($indexes as $sql) {
+            $pdo->exec($sql);
+        }
+        
+        return true;
+        
     } catch (PDOException $e) {
-        error_log("AUTO-CHECK FAILED: " . $e->getMessage());
+        logError("Table creation error: " . $e->getMessage());
+        return false;
     }
 }
 ?>
