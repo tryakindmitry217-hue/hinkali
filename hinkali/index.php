@@ -1,5 +1,4 @@
 <?php
-// Добавьте это в НАЧАЛО файла index.php
 header('Content-Type: text/html; charset=utf-8');
 ?>
 <!DOCTYPE html>
