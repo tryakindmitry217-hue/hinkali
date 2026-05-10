@@ -3,7 +3,6 @@
 // config.php - ОБНОВЛЕННАЯ КОНФИГУРАЦИЯ
 define('DEBUG_MODE', true);
 
-// ИСПРАВЛЕНО: Используем переменные окружения с резервными значениями
 define('DB_HOST', $_ENV['DB_HOST'] ?? 'dpg-d5q83t4oud1c73e0arl0-a.oregon-postgres.render.com');
 define('DB_NAME', $_ENV['DB_NAME'] ?? 'hinkali_db_q5k8');
 define('DB_USER', $_ENV['DB_USER'] ?? 'hinkali_db_q5k8_user');
