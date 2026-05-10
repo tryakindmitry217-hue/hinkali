@@ -1,5 +1,4 @@
 <?php
-// config.php - Конфигурация базы данных для PostgreSQL на Render
 
 // config.php - ОБНОВЛЕННАЯ КОНФИГУРАЦИЯ
 define('DEBUG_MODE', true);
